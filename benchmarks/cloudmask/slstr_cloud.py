@@ -65,7 +65,7 @@ def reconstruct_from_patches(args, patches: tf.Tensor, nx: int, ny: int, patch_s
     :param patch_size: the size of th patches
     :return: the reconstructed image with shape (1, height, weight, 1)
     """
-    # Read arguments 
+    # Read arguments
     IMAGE_H = args['IMAGE_H']
     IMAGE_W = args['IMAGE_W']
 
@@ -89,7 +89,7 @@ def reconstruct_from_patches(args, patches: tf.Tensor, nx: int, ny: int, patch_s
 # Inference
 def cloud_inference(args) -> None:
     print('Running benchmark slstr_cloud in inference mode.')
-    # Read arguments 
+    # Read arguments
     CROP_SIZE = args['CROP_SIZE']
     PATCH_SIZE = args['PATCH_SIZE']
     N_CHANNELS = args['N_CHANNELS']
@@ -106,8 +106,10 @@ def cloud_inference(args) -> None:
     # only yields batches of images for a single image at a time, so they can be
     # reconstructed.
     data_loader = SLSTRDataLoader(args, file_paths, single_image=True, crop_size=CROP_SIZE)
-    #data_loader = SLSTRDataLoader(args, file_paths, single_image=False, crop_size=CROP_SIZE)
+    test_data_loader = SLSTRDataLoader(args, file_paths, batch_size=args['batch_size'], no_cache=args['no_cache'])
     dataset = data_loader.to_dataset()
+    test_dataset = test_data_loader.to_dataset()
+    result = model.evaluate(test_dataset, batch_size=args['batch_size'], verbose=1)
 
     # Inference Loop
     for patches, file_name in dataset:
@@ -131,11 +133,11 @@ def cloud_inference(args) -> None:
         # Mask produced by inference
         mask = reconstruct_from_patches(args, mask_patches, nx, ny, patch_size=PATCH_SIZE - CROP_SIZE)
         # Compare mask with ground_truth_mask
-        # Accuracy is the number of hist 
+        # Accuracy is the number of hist
         # accuracy = 0
         # for i in range(len(mask_pathches):
         # accuracy += (mask[i] == ground_truth_mask[i]).sum()/siozeof(mask[i]))
-        
+
         output_dir = os.path.expanduser(args['output_dir'])
         mask_name = output_dir + file_name.name + '.h5'
         # print('mask_name: ', mask_name)
