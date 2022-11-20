@@ -146,7 +146,8 @@ def cloud_inference(args) -> None:
             handle.create_dataset('mask', data=mask)
     # Return the number of inferences
     d = {
-        "accuracy": "accuracy_array"
+        "test_loss": result[0],
+        "test_accuracy": result[1]
     }
     return len(file_paths), d
 
