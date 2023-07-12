@@ -20,13 +20,17 @@ greene> git config --global core.editor "nano"
 
 ## Get Interactive node and login
 
+Interactive jobs allow users to interact with HPC, allocate resources and run commands or scripts from the command line itself. You can run an interactive job like this:
+
 ```bash
-srun --gres=gpu:v100:1 --pty --mem=64G --time 02:00:00 /bin/bash
+greene> srun --gres=gpu:v100:1 --pty --mem=64G --time 02:00:00 /bin/bash
 ```
+
+Here we are asking for one v100 GPU with 64G memory and for 2 hours. If you exceed the time or memory limits allocated for it, the job will also abort. Different gpu can be allocated by changing the '--gres' flag like --gres=gpu:rtx8000:1 would give access to rtx8000. Similarly, time can be changed using the '--time' flag.
 
 ## Generating Experiment Configurations
 
-All bash terminal lines that are to be executed on the interactive node start with "node>".
+All bash terminal lines that are to be executed on the interactive node start with "node>". Below all the variables that start with '$' like $USER do not need to be changed as they are system variables. $USER will be automatically replaced with the person's username. 
 
 ```bash
 node> export USER_SCRATCH=/scratch/$USER/github-fork
@@ -43,6 +47,8 @@ node> cd $PROJECT_DIR
 ```
 
 ## Set-up Python
+
+Here, we are showing how to create a conda environment and python virtual environment. We are then using the python environment to install all package dependencies.
 
 ```bash
 node> module purge
@@ -69,9 +75,22 @@ node> pip install pip -U
 node> which python
 
 ```
-This should return $USER_SCRATCH/ENV3/bin/python
+The command 'which python' should return $USER_SCRATCH/ENV3/bin/python.
 
-Make sure to change the paths in the 'config.yaml' file to appropriate locations.
+All the above commands are used whenever we are trying to set-up the environment for the very first time. For all other times, these commands are sufficient to run all the following commands. 
+
+```bash
+greene> srun --gres=gpu:v100:1 --pty --mem=64G --time 02:00:00 /bin/bash
+
+node> export USER_SCRATCH=/scratch/$USER/github-fork
+node> export PROJECT_DIR=$USER_SCRATCH/mlcommons/benchmarks/cloudmask
+node> export PROJECT_DATA=$USER_SCRATCH/data
+
+node> source $USER_SCRATCH/ENV3/bin/activate
+
+```
+
+Make sure to change the paths in the 'config.yaml' file to appropriate locations. The paths for 'train_dir', 'inference_dir', 'model_file', 'output_dir' and 'venvpath' must be fixed based on the user's directory.
 
 ```bash
 node> cd $PROJECT_DIR/target/greene/
@@ -89,6 +108,7 @@ This command takes about 1hr to execute.
 
 ## Run the code
 
+Here, we are creating 'outputs' directory to store the inference model prediction masks. We are using the 'sbatch' command to run the slurm job, where details about resources like memory, time and gpu are given in the 'simple.slurm' file and also the command to run the program. 'squeue' command shows the status of the job i.e, if its pending or running etc.
 
 ```bash
 greene> cd $PROJECT_DIR/target/greene/
@@ -97,8 +117,12 @@ greene> sbatch simple.slurm
 greene> squeue -u $USER
 ```
 
+## Monitor/Check output
+
+
 ## Reproduce Experiments
 
+This will create multiple copies of config_simple.yaml, simple.slurm and the output log files.
 
 ```bash
 bash reproduce_experiments.sh
@@ -106,10 +130,12 @@ bash reproduce_experiments.sh
 
 ## Visualize results
 
-To visualize the graphs, pass the paths to the log files as the arguments while running the file visualizer.py
+To visualize the graphs, pass the paths to the log files as the arguments while running the file visualizer.py. You can pass along a single experiment log files or combine all of them and then pass them as inputs.
 
 ```bash
-python3 visualizer.py mlperf_cloudmask_diff_epochs.log cloudmask_run_diff_epochs.log
+cat cloudmask_200* >> cloudmask_200.log
+cat mlperf_cloudmask_200* >> mlperf_cloudmask_200.log
+python3 visualizer.py mlperf_cloudmask_200.log cloudmask_200.log
 ```
 
 ---
