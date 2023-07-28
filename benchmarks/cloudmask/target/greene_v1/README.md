@@ -100,11 +100,36 @@ This command takes about 1 minute to execute.
 
 ## Obtain the data
 
+There are two ways to obtain the data. The difference is in the way they are stored and obtained.
+
+### 1. Obtain data stored on AWS S3 bucket
+
+The following command is used to run a script which gets the data from an AWS S3 Bucket using the 'awscli' python package.
+
 ```bash
 node> time make data
 ```
 
 This command takes about 1hr to execute.
+
+### 2. Obtain data stored on Globus
+
+Besides using AWS to obtain the training/testing data, Globus is a viable, easy alternative.
+
+### To-Do's on Greene ###
+* Log into your Greene account on terminal; create a data/ directory under your scratch directory (e.g. /scratch/[your netid]/data/)
+
+### To-Do's on Globus ###
+* Go to [Globus.org](https://www.globus.org/)
+* Log in with your NYU account
+* Once you are log in, you should see a main page with different functionalities on the left/right side column
+* Click on File Manager on the left/right column
+* In the top right corner, you should see "Panels"; make sure to set it to two panes;
+* On your left panel, go to Collection Search, and search for "mlcommons-cloudmask-data", and click it to select
+* On your right panel, go to Collection Search and search for "Greene scratch directory"; once your selected it, your should see the path automatically populate to your scratch directory on Greene; Double-click to go into your newly created data/ directory
+* Lastly, **Make Sure** to go back onto your left panel (the panel with collection "mlcommons-cloudmask-data"); click **Select All** on the horizontal bar (you need both one-day/ and ssts/ directory); and click **Start** _on the left panel_ to start data transferring
+
+Now, you will need to wait for approximately 30 minutes for transfer completion.
 
 ## Run the code
 
@@ -119,6 +144,7 @@ greene> squeue -u $USER
 
 ## Monitor/Check output
 
+You can check the output 
 
 ## Reproduce Experiments
 
