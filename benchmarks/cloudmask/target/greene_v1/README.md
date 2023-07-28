@@ -144,7 +144,23 @@ greene> squeue -u $USER
 
 ## Monitor/Check output
 
-You can check the output 
+You can check the output by looking into the output log files. The location and names of those files can be found in 'config_simple.yaml' next to 'log_file:' and 'mlperf_logfile:'.
+
+```bash
+cat ./mlperf_cloudmask_v100_gpu_1.log
+```
+
+This will have output log lines in a form like this:
+
+:::MLLOG {"namespace": "", "time_ms": 1687900000019, "event_type": "POINT_IN_TIME", "key": "submission_status", "value": "success", "metadata": {"file": "slstr_cloud.py", "lineno": 389}}
+
+Each log line starts with ':::MLLOG' and generally has all the keys seen above. The type of event and values for each of them would be different. There are two log lines in particular that are to be checked for a successful run. One of them is as seen above, which has '"key": "submission_status", "value": "success"' in the line. This displays that the program ran successfully with no errors. The other line would have '"key": "result"' and has information about accuracy and loss. If both the lines are seen, then the program must've run successfully.
+
+You can also keep looking at the output files while the program runs using the following command.
+
+```bash
+tail -f ./mlperf_cloudmask_v100_gpu_1.log
+```
 
 ## Reproduce Experiments
 
